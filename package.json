@@ -1,13 +1,13 @@
 {
-  "name": "generator-teeny-cli",
+  "name": "generator-teeny-nm",
   "version": "0.0.1",
   "license": "MIT",
   "author": "Arno Versini",
-  "description": "Small CLI generator",
-  "homepage": "https://github.com/aversini/generator-teeny-cli",
+  "description": "Small node modules with optional CLI generator",
+  "homepage": "https://github.com/aversini/generator-teeny-nm",
   "repository": {
     "type": "git",
-    "url": "git@github.com:aversini/generator-teeny-cli.git"
+    "url": "git@github.com:aversini/generator-teeny-nm.git"
   },
   "files": [
     "app"

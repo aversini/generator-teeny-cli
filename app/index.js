@@ -21,12 +21,26 @@ module.exports = class extends Generator {
     this.description = "Short and to the point";
     this.moduleName = this.appname;
     this.githubUsername = null;
+    this.version = "0.0.1";
+    this.dependencies = {
+      commander: "7.0.0",
+      kleur: "4.1.4",
+      "pretty-error": "3.0.3",
+      "teeny-js-utilities": "^1.4.0",
+      "teeny-logger": "^0.2.0",
+    };
     try {
       const pkg = require(path.join(process.cwd(), "./package.json"));
       /* istanbul ignore next */
       if (pkg) {
         if (pkg.description) {
           this.description = pkg.description;
+        }
+        if (pkg.version) {
+          this.version = pkg.version;
+        }
+        if (pkg.dependencies) {
+          this.dependencies = pkg.dependencies;
         }
         if (pkg.repository) {
           const repo =
@@ -43,7 +57,7 @@ module.exports = class extends Generator {
   }
 
   prompting() {
-    this.log(yosay(`Welcome to the ${blue("teeny-cli")} generator!`));
+    this.log(yosay(`Welcome to the ${blue("teeny-nm")} generator!`));
     const prompts = [
       {
         default: !this.githubUsername,
@@ -119,11 +133,13 @@ module.exports = class extends Generator {
       this.destinationPath(),
       {
         author: this.user.git.name(),
+        dependencies: this.dependencies,
         githubUsername: this.props.githubUsername,
         moduleDescription: this.props.moduleDescription,
         moduleName: this.moduleName,
         repoName: kebabCase(repoName),
         scopedName: this.scope,
+        version: this.version,
       }
     );
     this.fs.move(

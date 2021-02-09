@@ -4,7 +4,7 @@ const path = require("path");
 const assert = require("yeoman-assert");
 const helpers = require("yeoman-test");
 
-describe("generator-teeny-cli:app", () => {
+describe("generator-teeny-nm:app", () => {
   it("", async () => {
     helpers
       .run(path.join(__dirname, "../app"))

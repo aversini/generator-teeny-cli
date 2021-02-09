@@ -1,6 +1,6 @@
 {
   "name": "<%= moduleName %>",
-  "version": "0.0.1",
+  "version": "<%= version %>",
   "license": "MIT",
   "author": "<%= author %>",
   "description": "<%= moduleDescription %>",
