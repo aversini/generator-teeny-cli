@@ -18,29 +18,47 @@ module.exports = class extends Generator {
   constructor(...args) {
     super(...args);
 
-    this.description = "Short and to the point";
-    this.moduleName = this.appname;
-    this.githubUsername = null;
-    this.version = "0.0.1";
     this.dependencies = {
-      commander: "7.0.0",
-      kleur: "4.1.4",
-      "pretty-error": "3.0.3",
-      "teeny-js-utilities": "^1.4.0",
-      "teeny-logger": "^0.2.0",
+      CLI: {
+        commander: "7.0.0",
+        kleur: "4.1.4",
+        "pretty-error": "3.0.3",
+        "teeny-js-utilities": "^1.4.0",
+        "teeny-logger": "^0.2.0",
+      },
+      noCLI: {
+        execa: "5.0.0",
+        kleur: "4.1.4",
+        lodash: "4.17.20",
+        "npm-package-arg": "8.1.0",
+        ora: "5.3.0",
+        "teeny-logger": "0.2.0",
+      },
     };
+    this.defaults = {
+      githubUsername: null,
+      moduleCLI: false,
+      moduleDescription: "Short and to the point",
+      moduleName: this.appname,
+      version: "0.0.1",
+    };
+
     try {
       const pkg = require(path.join(process.cwd(), "./package.json"));
       /* istanbul ignore next */
       if (pkg) {
         if (pkg.description) {
-          this.description = pkg.description;
+          this.defaults.moduleDescription = pkg.description;
         }
         if (pkg.version) {
-          this.version = pkg.version;
+          this.defaults.version = pkg.version;
+        }
+        if (pkg.bin) {
+          this.defaults.moduleCLI = true;
         }
         if (pkg.dependencies) {
-          this.dependencies = pkg.dependencies;
+          this.dependencies.CLI = pkg.dependencies;
+          this.dependencies.noCLI = pkg.dependencies;
         }
         if (pkg.repository) {
           const repo =
@@ -48,7 +66,7 @@ module.exports = class extends Generator {
               ? pkg.repository
               : pkg.repository.url;
           const { owner } = parseGitHubURL(repo);
-          this.githubUsername = owner;
+          this.defaults.githubUsername = owner;
         }
       }
     } catch (e) {
@@ -56,114 +74,180 @@ module.exports = class extends Generator {
     }
   }
 
-  prompting() {
+  async prompting() {
     this.log(yosay(`Welcome to the ${blue("teeny-nm")} generator!`));
     const prompts = [
       {
-        default: !this.githubUsername,
+        default: !this.defaults.githubUsername,
         message: "Is this a brand new module?",
         name: "newModule",
         type: "confirm",
       },
       {
-        default: this.appname,
+        default: this.defaults.moduleCLI,
+        message: "Is this module a CLI?",
+        name: "moduleCLI",
+        type: "confirm",
+        when: (x) => x.newModule === true,
+      },
+      {
+        default: this.defaults.appname,
         message: "Module name?",
         name: "moduleName",
+        validate: /* istanbul ignore next */ (x) =>
+          x.length > 0 ? true : "Module name is required",
+        when: (x) => x.newModule === true,
       },
       {
-        default: this.description,
+        default: this.defaults.moduleDescription,
         message: "Module description?",
         name: "moduleDescription",
+        when: (x) => x.newModule === true,
       },
       {
-        default: this.githubUsername,
+        default: this.defaults.githubUsername,
         message: "GitHub username?",
         name: "githubUsername",
         validate: /* istanbul ignore next */ (x) =>
           x.length > 0 ? true : "Username is required",
+        when: (x) => x.newModule === true,
+      },
+      {
+        default: true,
+        message: "About to re-generate files in this existing repo, continue?",
+        name: "continue",
+        type: "confirm",
+        when: (x) => x.newModule !== true,
+      },
+      {
+        default: true,
+        message: "About to generate files in this folder, continue?",
+        name: "continue",
+        type: "confirm",
+        when: (x) => x.newModule === true,
       },
     ];
 
-    // To access props later use this.props.someAnswer;
-    return this.prompt(prompts).then((props) => {
-      this.props = props;
-    });
+    this.props = await this.prompt(prompts);
+    /* istanbul ignore next */
+    if (!this.props.newModule) {
+      this.props = {
+        githubUsername: this.defaults.githubUsername,
+        moduleCLI: this.defaults.moduleCLI,
+        moduleDescription: this.defaults.moduleDescription,
+        moduleName: this.defaults.moduleName,
+      };
+    }
   }
 
   writing() {
-    const staticFolders = [".github", "configuration", "bin", "src"];
-    const staticFiles = [
-      ".bump-and-release.config.js",
-      ".commitlintrc.js",
-      ".eslintrc.js",
-      ".gitignore",
-      ".huskyrc.json",
-      ".lintstagedrc.json",
-      ".npmrc",
-      ".prettierignore",
-      ".prettierrc.js",
-      "jest.config.js",
-    ];
+    /* istanbul ignore else */
+    if (this.props.continue) {
+      const staticFolders = [".github", "configuration", "src"];
+      if (this.props.moduleCLI) {
+        staticFolders.push("bin");
+      }
+      const staticFiles = [
+        ".bump-and-release.config.js",
+        ".commitlintrc.js",
+        ".eslintrc.js",
+        ".gitignore",
+        ".huskyrc.json",
+        ".lintstagedrc.json",
+        ".npmrc",
+        ".prettierignore",
+        ".prettierrc.js",
+        "jest.config.js",
+      ];
 
-    let scope, repoName;
-    this.props.moduleName = this.props.moduleName.trim().replace(" ", "-");
+      let scope, repoName, moduleName;
+      this.props.moduleName = this.props.moduleName.trim().replace(" ", "-");
 
-    if (isScopedPackage(this.props.moduleName)) {
-      const res = this.props.moduleName.split("/");
-      scope = kebabCase(res[0]);
-      repoName = kebabCase(res[1]);
-      this.moduleName = `@${scope}/${repoName}`;
-    } else {
-      repoName = kebabCase(this.props.moduleName);
-      this.moduleName = repoName;
-    }
+      if (isScopedPackage(this.props.moduleName)) {
+        const res = this.props.moduleName.split("/");
+        scope = kebabCase(res[0]);
+        repoName = kebabCase(res[1]);
+        moduleName = `@${scope}/${repoName}`;
+      } else {
+        repoName = kebabCase(this.props.moduleName);
+        moduleName = repoName;
+      }
 
-    staticFolders.forEach((folder) => {
-      this.fs.copy(this.templatePath(folder), folder);
-    });
-    staticFiles.forEach((file) => {
-      this.fs.copy(this.templatePath(file), file);
-    });
-    this.fs.copyTpl(
-      [
-        `${this.templatePath()}/_package.json`,
-        `${this.templatePath()}/README.md`,
+      staticFolders.forEach((folder) => {
+        this.fs.copy(this.templatePath(folder), folder);
+      });
+      staticFiles.forEach((file) => {
+        this.fs.copy(this.templatePath(file), file);
+      });
+
+      const depsTpl = this.props.moduleCLI
+        ? this.dependencies.CLI
+        : this.dependencies.noCLI;
+      const srcFiles = [
+        this.props.moduleCLI
+          ? `${this.templatePath()}/_package-cli.json`
+          : `${this.templatePath()}/_package-nocli.json`,
         `${this.templatePath()}/LICENSE`,
-      ],
-      this.destinationPath(),
-      {
+      ];
+      /* istanbul ignore else */
+      if (this.props.newModule) {
+        srcFiles.push(`${this.templatePath()}/README.md`);
+      }
+      this.fs.copyTpl(srcFiles, this.destinationPath(), {
         author: this.user.git.name(),
-        dependencies: this.dependencies,
+        dependencies: JSON.stringify(depsTpl, null, 4)
+          .replace("{", "")
+          .replace("}", ""),
         githubUsername: this.props.githubUsername,
         moduleDescription: this.props.moduleDescription,
-        moduleName: this.moduleName,
+        moduleName,
+        npmInstall: this.props.moduleCLI ? "npm install -g" : "npm install",
         repoName: kebabCase(repoName),
-        scopedName: this.scope,
-        version: this.version,
-      }
-    );
-    this.fs.move(
-      this.destinationPath("_package.json"),
-      this.destinationPath("package.json")
-    );
+        version: this.defaults.version,
+      });
+
+      this.fs.move(
+        this.props.moduleCLI
+          ? this.destinationPath("_package-cli.json")
+          : this.destinationPath("_package-nocli.json"),
+        this.destinationPath("package.json")
+      );
+    }
   }
 
   /* istanbul ignore next */
   git() {
-    if (this.props.newModule && process.env.NODE_ENV !== "test") {
+    if (
+      this.props.continue &&
+      this.props.newModule &&
+      process.env.NODE_ENV !== "test"
+    ) {
       this.spawnCommandSync("git", ["init"]);
     }
   }
 
   /* istanbul ignore next */
   install() {
-    if (this.props.newModule && process.env.NODE_ENV !== "test") {
+    if (
+      this.props.continue &&
+      this.props.newModule &&
+      process.env.NODE_ENV !== "test"
+    ) {
       this.installDependencies({ bower: false });
     }
   }
 
   end() {
     this.log();
-    this.log("Your CLI is ready!");
+    /* istanbul ignore else */
+    if (this.props.continue) {
+      this.log(
+        this.props.moduleCLI
+          ? "Your CLI is ready!"
+          : "Your node module is ready!"
+      );
+    } else {
+      this.log("Bye then!");
+    }
   }
 };

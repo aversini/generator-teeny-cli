@@ -5,5 +5,5 @@ const logger = new TeenyLogger({
 });
 
 module.exports = (config) => {
-  logger.log("Starting CLI with: ", yellow(config));
+  logger.log("Configuration: ", yellow(config));
 };

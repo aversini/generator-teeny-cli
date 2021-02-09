@@ -10,7 +10,7 @@
 ## Installation
 
 ```sh
-> npm install <%= moduleName %>
+> <%= npmInstall %> <%= moduleName %>
 ```
 
 ## API

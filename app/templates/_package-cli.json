@@ -10,17 +10,20 @@
     "url": "git@github.com:<%= githubUsername %>/<%= repoName %>.git"
   },
   "bin": "bin/cli.js",
-  "files": ["src/*.js", "bin/cli.js"],
+  "files": ["bin/cli.js", "src/*.js"],
+  "engines": {
+    "node": ">=10"
+  },
   "scripts": {
     "bump": "bump-and-release -t bump",
     "changelog": "conventional-changelog -i CHANGELOG.md -s -p angular",
     "latest": "rimraf LATEST.md && conventional-changelog -o LATEST.md -n \"./configuration/latest/config.js\"",
-    "lint:fix": "eslint --fix --color \"./src/*.js\"",
-    "lint": "eslint --color \"./src/*.js\"",
-    "prettier:fix": "prettier --loglevel error --write \"src/*.js\"",
+    "lint:fix": "eslint --fix --color \"./src/*.js\" \"./bin/*.js\" \"./configuration/*.js\"",
+    "lint": "eslint --color \"./src/*.js\" \"./bin/*.js\" \"./configuration/*.js\"",
+    "prettier:fix": "prettier --loglevel error --write \"{src/**/*.js,bin/**/*.js,configuration/**/*.js}\"",
     "prettier:all": "npm-run-all --serial prettier:fix lint:fix",
     "release": "bump-and-release -t release",
-    "test": "cross-env NODE_ENV=\"test\" jest",
+    "test": "cross-env NODE_ENV=\"test\" TZ=UTC jest",
     "test:coverage": "npm run test -- --coverage",
     "test:watch": "npm run test -- --watch"
   },
@@ -42,11 +45,5 @@
     "q": "^1.5.1",
     "rimraf": "^3.0.2"
   },
-  "dependencies": {
-    "commander": "7.0.0",
-    "kleur": "4.1.4",
-    "pretty-error": "3.0.3",
-    "teeny-js-utilities": "^1.4.0",
-    "teeny-logger": "^0.2.0"
-  }
+  "dependencies": {<%- dependencies %>  }
 }
