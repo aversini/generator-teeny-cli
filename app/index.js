@@ -11,36 +11,40 @@ const {
 const Generator = require("yeoman-generator");
 const yosay = require("yosay");
 
+const {
+  dependencies,
+  githubUsername,
+  moduleCLI,
+  moduleDescription,
+  moduleName,
+  staticFiles,
+  staticFolders,
+  templateFiles,
+  version,
+} = require("./defaults");
+
 const pe = new PrettyError();
 pe.start();
+
+const sanitizeScriptsForPkg = (command) => command.replace(/'/gi, '\\"');
 
 module.exports = class extends Generator {
   constructor(...args) {
     super(...args);
 
     this.dependencies = {
-      CLI: {
-        commander: "7.0.0",
-        kleur: "4.1.4",
-        "pretty-error": "3.0.3",
-        "teeny-js-utilities": "^1.4.0",
-        "teeny-logger": "^0.2.0",
-      },
-      noCLI: {
-        execa: "5.0.0",
-        kleur: "4.1.4",
-        lodash: "4.17.20",
-        "npm-package-arg": "8.1.0",
-        ora: "5.3.0",
-        "teeny-logger": "0.2.0",
-      },
+      CLI: dependencies.CLI,
+      noCLI: dependencies.noCLI,
     };
     this.defaults = {
-      githubUsername: null,
-      moduleCLI: false,
-      moduleDescription: "Short and to the point",
-      moduleName: this.appname,
-      version: "0.0.1",
+      githubUsername,
+      moduleCLI,
+      moduleDescription,
+      moduleName: this.appname || moduleName,
+      staticFiles,
+      staticFolders,
+      templateFiles,
+      version,
     };
 
     try {
@@ -132,6 +136,7 @@ module.exports = class extends Generator {
     /* istanbul ignore next */
     if (!this.props.newModule) {
       this.props = {
+        continue: this.props.continue,
         githubUsername: this.defaults.githubUsername,
         moduleCLI: this.defaults.moduleCLI,
         moduleDescription: this.defaults.moduleDescription,
@@ -143,22 +148,10 @@ module.exports = class extends Generator {
   writing() {
     /* istanbul ignore else */
     if (this.props.continue) {
-      const staticFolders = [".github", "configuration", "src"];
+      const staticFolders = this.defaults.staticFolders;
       if (this.props.moduleCLI) {
         staticFolders.push("bin");
       }
-      const staticFiles = [
-        ".bump-and-release.config.js",
-        ".commitlintrc.js",
-        ".eslintrc.js",
-        ".gitignore",
-        ".huskyrc.json",
-        ".lintstagedrc.json",
-        ".npmrc",
-        ".prettierignore",
-        ".prettierrc.js",
-        "jest.config.js",
-      ];
 
       let scope, repoName, moduleName;
       this.props.moduleName = this.props.moduleName.trim().replace(" ", "-");
@@ -176,41 +169,70 @@ module.exports = class extends Generator {
       staticFolders.forEach((folder) => {
         this.fs.copy(this.templatePath(folder), folder);
       });
-      staticFiles.forEach((file) => {
+      this.defaults.staticFiles.forEach((file) => {
         this.fs.copy(this.templatePath(file), file);
       });
 
       const depsTpl = this.props.moduleCLI
         ? this.dependencies.CLI
         : this.dependencies.noCLI;
+
+      const templateFiles = this.defaults.templateFiles;
+
       const srcFiles = [
-        this.props.moduleCLI
-          ? `${this.templatePath()}/_package-cli.json`
-          : `${this.templatePath()}/_package-nocli.json`,
-        `${this.templatePath()}/LICENSE`,
+        `${this.templatePath()}/${templateFiles.pkg.src}`,
+        `${this.templatePath()}/${templateFiles.license}`,
       ];
       /* istanbul ignore else */
       if (this.props.newModule) {
-        srcFiles.push(`${this.templatePath()}/README.md`);
+        srcFiles.push(`${this.templatePath()}/${templateFiles.readme}`);
       }
+
       this.fs.copyTpl(srcFiles, this.destinationPath(), {
         author: this.user.git.name(),
+        // eslint-disable-next-line no-magic-numbers
         dependencies: JSON.stringify(depsTpl, null, 4)
           .replace("{", "")
           .replace("}", ""),
         githubUsername: this.props.githubUsername,
+        moduleCLI: this.props.moduleCLI,
         moduleDescription: this.props.moduleDescription,
         moduleName,
         npmInstall: this.props.moduleCLI ? "npm install -g" : "npm install",
         repoName: kebabCase(repoName),
+        scriptsBump: sanitizeScriptsForPkg(templateFiles.pkg.scripts.bump),
+        scriptsChangelog: sanitizeScriptsForPkg(
+          templateFiles.pkg.scripts.changelog
+        ),
+        scriptsLatest: sanitizeScriptsForPkg(templateFiles.pkg.scripts.latest),
+        scriptsLint: this.props.moduleCLI
+          ? sanitizeScriptsForPkg(templateFiles.pkg.scripts.CLI.lint)
+          : sanitizeScriptsForPkg(templateFiles.pkg.scripts.noCLI.lint),
+        scriptsLintFix: this.props.moduleCLI
+          ? sanitizeScriptsForPkg(templateFiles.pkg.scripts.CLI.lintFix)
+          : sanitizeScriptsForPkg(templateFiles.pkg.scripts.noCLI.lintFix),
+        scriptsPrettierAll: sanitizeScriptsForPkg(
+          templateFiles.pkg.scripts.prettierAll
+        ),
+        scriptsPrettierFix: this.props.moduleCLI
+          ? sanitizeScriptsForPkg(templateFiles.pkg.scripts.CLI.prettierFix)
+          : sanitizeScriptsForPkg(templateFiles.pkg.scripts.noCLI.prettierFix),
+        scriptsRelease: sanitizeScriptsForPkg(
+          templateFiles.pkg.scripts.release
+        ),
+        scriptsTest: sanitizeScriptsForPkg(templateFiles.pkg.scripts.test),
+        scriptsTestCoverage: sanitizeScriptsForPkg(
+          templateFiles.pkg.scripts.testCoverage
+        ),
+        scriptsTestWatch: sanitizeScriptsForPkg(
+          templateFiles.pkg.scripts.testWatch
+        ),
         version: this.defaults.version,
       });
 
       this.fs.move(
-        this.props.moduleCLI
-          ? this.destinationPath("_package-cli.json")
-          : this.destinationPath("_package-nocli.json"),
-        this.destinationPath("package.json")
+        this.destinationPath(templateFiles.pkg.src),
+        this.destinationPath(templateFiles.pkg.dest)
       );
     }
   }
