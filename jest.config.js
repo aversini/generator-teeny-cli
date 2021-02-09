@@ -21,7 +21,7 @@ module.exports = {
    *
    * Default undefined
    */
-  collectCoverageFrom: ["app/**/*.js", "!src/__tests__/**/*.*"],
+  collectCoverageFrom: ["app/index.js", "!__tests__/**/*.*"],
 
   /**
    * The directory where Jest should output its coverage files.
@@ -55,16 +55,6 @@ module.exports = {
       statements: 100,
     },
   },
-
-  /**
-   * An array of file extensions your modules use. If you require
-   * modules without specifying a file extension, these are the
-   * extensions Jest will look for, in left-to-right order.
-   * @type {Array}
-   *
-   * Default: ["js", "json", "jsx", "ts", "tsx", "node"]
-   */
-  moduleFileExtensions: ["js"],
 
   /**
    * Activates notifications for test results.

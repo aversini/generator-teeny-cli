@@ -2,7 +2,7 @@
   "name": "<%= moduleName %>",
   "version": "0.0.1",
   "license": "MIT",
-  "author": "<%= name %>",
+  "author": "<%= author %>",
   "description": "<%= moduleDescription %>",
   "homepage": "https://github.com/<%= githubUsername %>/<%= repoName %>",
   "repository": {

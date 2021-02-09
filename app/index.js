@@ -23,6 +23,7 @@ module.exports = class extends Generator {
     this.githubUsername = null;
     try {
       const pkg = require(path.join(process.cwd(), "./package.json"));
+      /* istanbul ignore next */
       if (pkg) {
         if (pkg.description) {
           this.description = pkg.description;
@@ -51,8 +52,7 @@ module.exports = class extends Generator {
         type: "confirm",
       },
       {
-        default: kebabCase(this.appname),
-        filter: (x) => kebabCase(x),
+        default: this.appname,
         message: "Module name?",
         name: "moduleName",
       },
@@ -65,7 +65,8 @@ module.exports = class extends Generator {
         default: this.githubUsername,
         message: "GitHub username?",
         name: "githubUsername",
-        validate: (x) => (x.length > 0 ? true : "Username is required"),
+        validate: /* istanbul ignore next */ (x) =>
+          x.length > 0 ? true : "Username is required",
       },
     ];
 
@@ -89,9 +90,19 @@ module.exports = class extends Generator {
       ".prettierrc.js",
       "jest.config.js",
     ];
-    const repoName = isScopedPackage(this.props.moduleName)
-      ? this.props.moduleName.split("/")[1]
-      : this.props.moduleName;
+
+    let scope, repoName;
+    this.props.moduleName = this.props.moduleName.trim().replace(" ", "-");
+
+    if (isScopedPackage(this.props.moduleName)) {
+      const res = this.props.moduleName.split("/");
+      scope = kebabCase(res[0]);
+      repoName = kebabCase(res[1]);
+      this.moduleName = `@${scope}/${repoName}`;
+    } else {
+      repoName = kebabCase(this.props.moduleName);
+      this.moduleName = repoName;
+    }
 
     staticFolders.forEach((folder) => {
       this.fs.copy(this.templatePath(folder), folder);
@@ -107,11 +118,12 @@ module.exports = class extends Generator {
       ],
       this.destinationPath(),
       {
+        author: this.user.git.name(),
         githubUsername: this.props.githubUsername,
         moduleDescription: this.props.moduleDescription,
-        moduleName: this.props.moduleName,
-        name: this.user.git.name(),
-        repoName,
+        moduleName: this.moduleName,
+        repoName: kebabCase(repoName),
+        scopedName: this.scope,
       }
     );
     this.fs.move(
@@ -120,14 +132,16 @@ module.exports = class extends Generator {
     );
   }
 
+  /* istanbul ignore next */
   git() {
-    if (this.props.newModule) {
+    if (this.props.newModule && process.env.NODE_ENV !== "test") {
       this.spawnCommandSync("git", ["init"]);
     }
   }
 
+  /* istanbul ignore next */
   install() {
-    if (this.props.newModule) {
+    if (this.props.newModule && process.env.NODE_ENV !== "test") {
       this.installDependencies({ bower: false });
     }
   }
