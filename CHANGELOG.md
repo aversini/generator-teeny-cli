@@ -1,3 +1,12 @@
+## [1.0.3](https://github.com/aversini/generator-teeny-nm/compare/v1.0.2...v1.0.3) (2021-02-10)
+
+
+### Bug Fixes
+
+* prod dependencies are not updated when a package already exist ([81fd574](https://github.com/aversini/generator-teeny-nm/commit/81fd5745f265c8871a94e4cfd76251d1bc2f6079))
+
+
+
 ## [1.0.2](https://github.com/aversini/generator-teeny-nm/compare/v1.0.1...v1.0.2) (2021-02-10)
 
 
