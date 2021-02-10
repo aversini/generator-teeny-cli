@@ -5,7 +5,7 @@
 ![David](https://img.shields.io/david/dev/aversini/teeny-cli-generator?logo=npm)
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/aversini/teeny-cli-generator/coverage?label=coverage&logo=github)
 
-> Teeny Node Module Generator is a command line tool that scaffold out a brand-new node module with an optional CLI entry-point
+> Teeny Node Module Generator is a command line tool that can scaffold out a brand-new node module with an optional CLI entry-point.
 
 ## Installation
 

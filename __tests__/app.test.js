@@ -1,3 +1,5 @@
+/* eslint-disable new-cap */
+
 "use strict";
 
 const path = require("path");
@@ -27,6 +29,11 @@ describe("generator-teeny-nm:app", () => {
     assert.file(["LICENSE", "README.md"]);
     assert.noFile(["bin", "bin/cli.js"]);
     assert.fileContent("README.md", "npm install some-name");
+    assert.JSONFileContent("package.json", {
+      description: "some description",
+      homepage: "https://github.com/some-github-username/some-name",
+      name: "some-name",
+    });
   });
 
   it("should generate new files for a scoped node module with no CLI support", async () => {
@@ -42,6 +49,11 @@ describe("generator-teeny-nm:app", () => {
     assert.file(["LICENSE", "README.md"]);
     assert.noFile(["bin", "bin/cli.js"]);
     assert.fileContent("README.md", "npm install @some-scope/some-name");
+    assert.JSONFileContent("package.json", {
+      description: "some description",
+      homepage: "https://github.com/some-github-username/some-name",
+      name: "@some-scope/some-name",
+    });
   });
 
   it("should generate new files for a non-scoped node module with CLI support", async () => {
@@ -168,7 +180,6 @@ describe("generator-teeny-nm:app", () => {
     ]);
 
     assert.fileContent("README.md", "npm install -g @some-scope/some-name");
-    // eslint-disable-next-line new-cap
     assert.JSONFileContent("package.json", {
       description: "some description",
       homepage: "https://github.com/some-github-username/some-name",
@@ -178,7 +189,8 @@ describe("generator-teeny-nm:app", () => {
 
   it("should not generate any files if the user does not want to continue", async () => {
     helpers.mockPrompt(generator, {
-      continue: false,
+      goodToGo: false,
+      newModule: false,
     });
 
     assert.noFile([

@@ -1,6 +1,7 @@
 "use strict";
 
 const { blue } = require("kleur");
+const boxen = require("boxen");
 const path = require("path");
 const PrettyError = require("pretty-error");
 const {
@@ -10,6 +11,10 @@ const {
 } = require("teeny-js-utilities");
 const Generator = require("yeoman-generator");
 const yosay = require("yosay");
+const TeenyLogger = require("teeny-logger");
+const logger = new TeenyLogger({
+  boring: process.env.NODE_ENV === "test",
+});
 
 const {
   dependencies,
@@ -116,56 +121,73 @@ module.exports = class extends Generator {
           x.length > 0 ? true : "Username is required",
         when: (x) => x.newModule === true,
       },
-      {
-        default: true,
-        message: "About to re-generate files in this existing repo, continue?",
-        name: "continue",
-        type: "confirm",
-        when: (x) => x.newModule !== true,
-      },
-      {
-        default: true,
-        message: "About to generate files in this folder, continue?",
-        name: "continue",
-        type: "confirm",
-        when: (x) => x.newModule === true,
-      },
     ];
 
     this.props = await this.prompt(prompts);
+  }
+
+  processingPrompts() {
     /* istanbul ignore next */
     if (!this.props.newModule) {
       this.props = {
-        continue: this.props.continue,
         githubUsername: this.defaults.githubUsername,
         moduleCLI: this.defaults.moduleCLI,
         moduleDescription: this.defaults.moduleDescription,
         moduleName: this.defaults.moduleName,
       };
     }
+
+    const staticFolders = this.defaults.staticFolders;
+    if (this.props.moduleCLI) {
+      staticFolders.push("bin");
+    }
+
+    let scope;
+    this.props.moduleName = this.props.moduleName.trim().replace(" ", "-");
+
+    if (isScopedPackage(this.props.moduleName)) {
+      const res = this.props.moduleName.split("/");
+      scope = kebabCase(res[0]);
+      this.repoName = kebabCase(res[1]);
+      this.moduleName = `@${scope}/${this.repoName}`;
+    } else {
+      this.repoName = kebabCase(this.props.moduleName);
+      this.moduleName = this.repoName;
+    }
+  }
+
+  async getConfirmation() {
+    let msg = `Package name: ${blue(this.moduleName)}\n`;
+    msg += `Version: ${blue(this.defaults.version)}\n`;
+    msg += `Command Line Support: ${blue(this.props.moduleCLI)}`;
+
+    logger.log(
+      boxen(msg, {
+        align: "center",
+        borderColor: "yellow",
+        padding: 1,
+      })
+    );
+
+    const prompts = [
+      {
+        default: true,
+        message: this.props.newModule
+          ? "About to generate files in this folder, continue?"
+          : /* istanbul ignore next */
+            "About to re-generate files in this existing repo, continue?",
+        name: "goodToGo",
+        type: "confirm",
+      },
+    ];
+
+    const { goodToGo } = await this.prompt(prompts);
+    this.props.goodToGo = goodToGo;
   }
 
   writing() {
     /* istanbul ignore else */
-    if (this.props.continue) {
-      const staticFolders = this.defaults.staticFolders;
-      if (this.props.moduleCLI) {
-        staticFolders.push("bin");
-      }
-
-      let scope, repoName, moduleName;
-      this.props.moduleName = this.props.moduleName.trim().replace(" ", "-");
-
-      if (isScopedPackage(this.props.moduleName)) {
-        const res = this.props.moduleName.split("/");
-        scope = kebabCase(res[0]);
-        repoName = kebabCase(res[1]);
-        moduleName = `@${scope}/${repoName}`;
-      } else {
-        repoName = kebabCase(this.props.moduleName);
-        moduleName = repoName;
-      }
-
+    if (this.props.goodToGo) {
       staticFolders.forEach((folder) => {
         this.fs.copy(this.templatePath(folder), folder);
       });
@@ -197,9 +219,9 @@ module.exports = class extends Generator {
         githubUsername: this.props.githubUsername,
         moduleCLI: this.props.moduleCLI,
         moduleDescription: this.props.moduleDescription,
-        moduleName,
+        moduleName: this.moduleName,
         npmInstall: this.props.moduleCLI ? "npm install -g" : "npm install",
-        repoName: kebabCase(repoName),
+        repoName: kebabCase(this.repoName),
         scriptsBump: sanitizeScriptsForPkg(templateFiles.pkg.scripts.bump),
         scriptsChangelog: sanitizeScriptsForPkg(
           templateFiles.pkg.scripts.changelog
@@ -240,7 +262,7 @@ module.exports = class extends Generator {
   /* istanbul ignore next */
   git() {
     if (
-      this.props.continue &&
+      this.props.goodToGo &&
       this.props.newModule &&
       process.env.NODE_ENV !== "test"
     ) {
@@ -251,7 +273,7 @@ module.exports = class extends Generator {
   /* istanbul ignore next */
   install() {
     if (
-      this.props.continue &&
+      this.props.goodToGo &&
       this.props.newModule &&
       process.env.NODE_ENV !== "test"
     ) {
@@ -262,7 +284,7 @@ module.exports = class extends Generator {
   end() {
     this.log();
     /* istanbul ignore else */
-    if (this.props.continue) {
+    if (this.props.goodToGo) {
       this.log(
         this.props.moduleCLI
           ? "Your CLI is ready!"
