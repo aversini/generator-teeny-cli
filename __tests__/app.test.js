@@ -116,6 +116,9 @@ describe("generator-teeny-nm:app", () => {
     assert.fileContent("README.md", "npm install -g some-name");
     // eslint-disable-next-line new-cap
     assert.JSONFileContent("package.json", {
+      bin: {
+        "some-name": "bin/cli.js",
+      },
       description: "some description",
       homepage: "https://github.com/some-github-username/some-name",
       name: "some-name",

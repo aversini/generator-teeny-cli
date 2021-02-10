@@ -9,7 +9,9 @@
     "type": "git",
     "url": "git@github.com:<%= githubUsername %>/<%= repoName %>.git"
   },<% if(moduleCLI){ %>
-  "bin": "bin/cli.js",
+  "bin": {
+    "<%= moduleName %>": "bin/cli.js"
+  },
   "files": [
     "bin/cli.js",
     "src/*.js"
