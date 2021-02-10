@@ -1,6 +1,6 @@
 {
   "name": "generator-teeny-nm",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "license": "MIT",
   "author": "Arno Versini",
   "description": "Small node modules with optional CLI generator",
