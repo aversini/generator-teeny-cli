@@ -1,21 +1,22 @@
-const commonDependencies = {
-  kleur: "4.1.4",
-  lodash: "4.17.20",
-  ora: "5.3.0",
-  "pretty-error": "3.0.3",
-  "teeny-js-utilities": "^1.5.0",
-  "teeny-logger": "^0.2.0",
-};
-
 module.exports = {
   dependencies: {
     CLI: {
-      commander: "7.0.0",
-      ...commonDependencies,
+      kleur: "4.1.4",
+      lodash: "4.17.20",
+      meow: "9.0.0",
+      ora: "5.3.0",
+      "pretty-error": "3.0.3",
+      "teeny-js-utilities": "^1.5.0",
+      "teeny-logger": "^0.2.0",
     },
     noCLI: {
       execa: "5.0.0",
-      ...commonDependencies,
+      kleur: "4.1.4",
+      lodash: "4.17.20",
+      ora: "5.3.0",
+      "pretty-error": "3.0.3",
+      "teeny-js-utilities": "^1.5.0",
+      "teeny-logger": "^0.2.0",
     },
   },
   githubUsername: null,

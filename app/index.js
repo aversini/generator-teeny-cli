@@ -5,9 +5,10 @@ const boxen = require("boxen");
 const path = require("path");
 const PrettyError = require("pretty-error");
 const {
+  isScopedPackage,
   kebabCase,
   parseGitHubURL,
-  isScopedPackage,
+  shallowMerge,
 } = require("teeny-js-utilities");
 const Generator = require("yeoman-generator");
 const yosay = require("yosay");
@@ -66,8 +67,14 @@ module.exports = class extends Generator {
           this.defaults.moduleCLI = true;
         }
         if (pkg.dependencies) {
-          this.dependencies.CLI = pkg.dependencies;
-          this.dependencies.noCLI = pkg.dependencies;
+          this.dependencies.CLI = shallowMerge(
+            this.dependencies.CLI,
+            pkg.dependencies
+          );
+          this.dependencies.noCLI = shallowMerge(
+            this.dependencies.noCLI,
+            pkg.dependencies
+          );
         }
         if (pkg.repository) {
           const repo =
