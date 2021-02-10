@@ -3,7 +3,7 @@ const commonDependencies = {
   lodash: "4.17.20",
   ora: "5.3.0",
   "pretty-error": "3.0.3",
-  "teeny-js-utilities": "^1.4.0",
+  "teeny-js-utilities": "^1.5.0",
   "teeny-logger": "^0.2.0",
 };
 

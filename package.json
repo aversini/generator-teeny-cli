@@ -56,8 +56,8 @@
     "boxen": "5.0.0",
     "kleur": "4.1.4",
     "pretty-error": "3.0.3",
-    "teeny-js-utilities": "1.5.0",
-    "teeny-logger": "0.2.0",
+    "teeny-js-utilities": "^1.5.0",
+    "teeny-logger": "^0.2.0",
     "yeoman-generator": "4.13.0",
     "yosay": "2.0.2"
   }
