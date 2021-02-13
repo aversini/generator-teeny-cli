@@ -1,3 +1,12 @@
+# [1.1.0](https://github.com/aversini/generator-teeny-nm/compare/v1.0.3...v1.1.0) (2021-02-13)
+
+
+### Features
+
+* bumping to latest deps and replacing commander example with meow ([475e8fd](https://github.com/aversini/generator-teeny-nm/commit/475e8fde432b30ec44787b25ca2bca5123053c9b))
+
+
+
 ## [1.0.3](https://github.com/aversini/generator-teeny-nm/compare/v1.0.2...v1.0.3) (2021-02-10)
 
 

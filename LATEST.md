@@ -1,5 +1,5 @@
 
-### Bug Fixes
+### Features
 
-* prod dependencies are not updated when a package already exist ([81fd574](https://github.com/aversini/generator-teeny-nm/commit/81fd5745f265c8871a94e4cfd76251d1bc2f6079))
+* bumping to latest deps and replacing commander example with meow ([475e8fd](https://github.com/aversini/generator-teeny-nm/commit/475e8fde432b30ec44787b25ca2bca5123053c9b))
 
