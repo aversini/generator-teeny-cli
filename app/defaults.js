@@ -1,12 +1,13 @@
 module.exports = {
   dependencies: {
     CLI: {
+      boxen: "5.0.0",
       kleur: "4.1.4",
       lodash: "4.17.20",
       meow: "9.0.0",
       ora: "5.3.0",
       "pretty-error": "3.0.3",
-      "teeny-js-utilities": "^1.5.0",
+      "teeny-js-utilities": "^1.8.0",
       "teeny-logger": "^0.2.0",
     },
     noCLI: {
@@ -15,7 +16,7 @@ module.exports = {
       lodash: "4.17.20",
       ora: "5.3.0",
       "pretty-error": "3.0.3",
-      "teeny-js-utilities": "^1.5.0",
+      "teeny-js-utilities": "^1.8.0",
       "teeny-logger": "^0.2.0",
     },
   },
