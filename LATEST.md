@@ -1,5 +1,5 @@
 
-### Features
+### Bug Fixes
 
-* bumping to latest deps and replacing commander example with meow ([475e8fd](https://github.com/aversini/generator-teeny-nm/commit/475e8fde432b30ec44787b25ca2bca5123053c9b))
+* bumping dependencies to latest ([c093b12](https://github.com/aversini/generator-teeny-nm/commit/c093b126c0bbaa3934437afc7ff011c3361fccda))
 

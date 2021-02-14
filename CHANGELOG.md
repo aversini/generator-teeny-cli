@@ -1,3 +1,12 @@
+## [1.1.1](https://github.com/aversini/generator-teeny-nm/compare/v1.1.0...v1.1.1) (2021-02-14)
+
+
+### Bug Fixes
+
+* bumping dependencies to latest ([c093b12](https://github.com/aversini/generator-teeny-nm/commit/c093b126c0bbaa3934437afc7ff011c3361fccda))
+
+
+
 # [1.1.0](https://github.com/aversini/generator-teeny-nm/compare/v1.0.3...v1.1.0) (2021-02-13)
 
 
