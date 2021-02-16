@@ -7,7 +7,7 @@ module.exports = {
       meow: "9.0.0",
       ora: "5.3.0",
       "pretty-error": "3.0.3",
-      "teeny-js-utilities": "^2.0.1",
+      "teeny-js-utilities": "^3.0.0",
       "teeny-logger": "^0.2.0",
     },
     noCLI: {
@@ -16,7 +16,7 @@ module.exports = {
       lodash: "4.17.20",
       ora: "5.3.0",
       "pretty-error": "3.0.3",
-      "teeny-js-utilities": "^2.0.1",
+      "teeny-js-utilities": "^3.0.0",
       "teeny-logger": "^0.2.0",
     },
   },
