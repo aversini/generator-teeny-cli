@@ -8,7 +8,7 @@ module.exports = {
       ora: "5.3.0",
       "pretty-error": "3.0.3",
       "teeny-js-utilities": "^3.0.0",
-      "teeny-logger": "^0.2.0",
+      "teeny-logger": "^1.0.0",
     },
     noCLI: {
       execa: "5.0.0",
@@ -17,7 +17,7 @@ module.exports = {
       ora: "5.3.0",
       "pretty-error": "3.0.3",
       "teeny-js-utilities": "^3.0.0",
-      "teeny-logger": "^0.2.0",
+      "teeny-logger": "^1.0.0",
     },
   },
   githubUsername: null,
