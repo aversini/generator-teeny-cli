@@ -3,7 +3,7 @@ module.exports = {
     CLI: {
       boxen: "5.0.0",
       kleur: "4.1.4",
-      lodash: "4.17.20",
+      lodash: "4.17.21",
       meow: "9.0.0",
       ora: "5.3.0",
       "pretty-error": "3.0.3",
@@ -13,7 +13,7 @@ module.exports = {
     noCLI: {
       execa: "5.0.0",
       kleur: "4.1.4",
-      lodash: "4.17.20",
+      lodash: "4.17.21",
       ora: "5.3.0",
       "pretty-error": "3.0.3",
       "teeny-js-utilities": "^3.0.0",
