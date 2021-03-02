@@ -12,3 +12,5 @@ updates:
     ignore:
       - dependency-name: "yeoman-generator"
         versions: ["5.x"]
+      - dependency-name: "husky"
+        versions: ["5.x"]

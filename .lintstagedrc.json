@@ -1,17 +1,3 @@
 {
-  "bin/**/*.js": [
-    "prettier --write",
-    "eslint --fix",
-    "git add"
-  ],
-  "configuration/**/*.js": [
-    "prettier --write",
-    "eslint --fix",
-    "git add"
-  ],
-  "src/**/*.js": [
-    "prettier --write",
-    "eslint --fix",
-    "git add"
-  ]
+  "app/**/*.js": ["prettier --write", "eslint --fix", "git add"]
 }
