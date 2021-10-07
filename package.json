@@ -53,7 +53,7 @@
     "yeoman-test": "^5.0.1"
   },
   "dependencies": {
-    "boxen": "5.0.0",
+    "boxen": "6.2.0",
     "kleur": "4.1.4",
     "pretty-error": "3.0.3",
     "teeny-js-utilities": "^3.0.0",
